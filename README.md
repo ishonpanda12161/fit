@@ -29,3 +29,26 @@ fit ai "show me history"
 → fit log --graph
 
 
+
+📦 Installation (Windows)
+1. Download fit.zip from the Releases page
+
+Unzip it — you will find:
+
+fit.jar
+install-fit.bat
+uninstall-fit.bat
+
+2. Install FIT globally
+
+Right-click install-fit.bat → Run as administrator
+
+This installs FIT to:
+
+C:\Program Files\fit\
+
+
+and registers the fit command system-wide.
+
+3. Test installation
+fit aitest
