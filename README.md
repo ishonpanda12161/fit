@@ -20,6 +20,7 @@ Perfect for learning how version control works internally — or for experimenti
 - Fast-forward merging (`fit promote`)
 
 ### 🤖 AI-Assisted Natural Language Commands
+## MAY NOT WORK FOR YOU DUE TO API LIMITATIONS
 FIT includes a built-in AI layer (Groq API) that translates plain English into real FIT commands:
 
 ```bash
