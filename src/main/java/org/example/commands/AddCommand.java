@@ -1,5 +1,6 @@
 package org.example.commands;
 
+import org.example.Utils.IgnoreUtil;
 import org.example.core.Index;
 import org.example.core.ObjectStore;
 
@@ -7,39 +8,49 @@ import java.io.File;
 import java.nio.file.Files;
 import java.util.Map;
 
-public class AddCommand implements Command{
+public class AddCommand implements Command {
+
     @Override
     public void execute(String[] args) {
-        try{
-            if(args.length==0)
-            {
-                System.out.println("Error: No file specified");
-                return;
-            }
 
-            String filePath = args[0];
-            File file = new File(filePath);
+        if (args.length == 0) {
+            System.out.println("Error: No file specified");
+            return;
+        }
 
-            if(!file.exists())
-            {
-                System.out.println("Error: file not found -> "+filePath);
-                return;
-            }
+        String target = args[0];
+        File f = new File(target);
 
-            byte[] data = Files.readAllBytes(file.toPath());
-
-            String hash = ObjectStore.store(data);
-
-            Map<String,String> index = Index.load();
-
-            index.put(filePath,hash);
+        try {
+            Map<String, String> index = Index.load();
+            addPath(f, index);
             Index.save(index);
-
-            System.out.println("Added '"+filePath+"' -> "+hash);
-        }catch (Exception e)
-        {
+        } catch (Exception e) {
             System.out.println("Error: Failed to add file/s");
             e.printStackTrace();
         }
+    }
+
+    private void addPath(File f, Map<String, String> index) throws Exception {
+
+        if (!f.exists()) return;
+
+        if (f.isDirectory()) {
+            if (f.getName().equals(".fit")) return;
+            for (File child : f.listFiles()) addPath(child, index);
+            return;
+        }
+
+        if (IgnoreUtil.shouldIgnore(f.getName())) return;
+        if (f.getName().endsWith(".jar")) return;
+
+        String projectRoot = new File(".").getCanonicalPath().replace("\\", "/");
+        String canonical = f.getCanonicalPath().replace("\\", "/");
+        String normalized = canonical.replace(projectRoot + "/", "");
+
+        byte[] content = Files.readAllBytes(f.toPath());
+        String hash = ObjectStore.store(content);
+
+        index.put(normalized, hash);
     }
 }
