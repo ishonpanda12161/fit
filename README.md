@@ -28,6 +28,7 @@ fit ai "create a new branch for testing"
 fit ai "show me history"
 → fit log --graph
 
+```
 
 
 📦 Installation (Windows)
