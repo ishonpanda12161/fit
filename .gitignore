@@ -1,3 +1,6 @@
+# Ignore API client containing secrets
+src/main/java/org/example/ai/AIClient.java
+
 target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
