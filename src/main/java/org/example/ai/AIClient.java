@@ -8,7 +8,7 @@ import java.net.http.HttpResponse;
 public class AIClient {
 
     private static final String API_URL = "https://api.groq.com/openai/v1/chat/completions";
-    public static String API_KEY = "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";
+    public static String API_KEY = "nahi bataunga";
 
     private static final HttpClient client = HttpClient.newHttpClient();
 
