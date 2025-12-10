@@ -14,25 +14,21 @@ public class SwitchCommand implements Command {
         }
 
         String branch = args[0];
+        File ref = new File(".fit/refs/" + branch);
+
+        if (!ref.exists()) {
+            System.out.println("Branch not found: " + branch);
+            return;
+        }
 
         try {
-            File branchFile = new File(".fit/refs/" + branch);
-            if (!branchFile.exists()) {
-                System.out.println("Branch not found: " + branch);
-                return;
-            }
+            String commitHash = Files.readString(ref.toPath()).trim();
 
-            String commitHash = Files.readString(branchFile.toPath()).trim();
+            // Restore committed snapshot
+            new CheckoutCommand().checkoutToWorktree(commitHash);
 
-            if (commitHash.isBlank()) {
-                System.out.println("Branch has no commits yet.");
-                return;
-            }
-
-            CheckoutCommand checkout = new CheckoutCommand();
-            checkout.checkoutToWorktree(commitHash);
-
-            Files.writeString(new File(".fit/HEAD").toPath(), branch);
+            // Set HEAD to branch
+            Files.writeString(new File(".fit/HEAD").toPath(), "ref: refs/" + branch);
 
             System.out.println("Switched to branch " + branch);
 

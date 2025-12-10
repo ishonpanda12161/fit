@@ -1,7 +1,6 @@
 package org.example.commands;
 
 import org.example.core.ObjectStore;
-
 import java.io.File;
 import java.nio.file.Files;
 import java.util.HashMap;
@@ -25,8 +24,8 @@ public class CheckoutCommand implements Command {
         try {
             checkoutToWorktree(commitHash);
 
-            Files.writeString(new File(".fit/HEAD").toPath(),
-                    "detached: " + commitHash);
+            // Only checkout creates detached HEAD
+            Files.writeString(new File(".fit/HEAD").toPath(), "detached: " + commitHash);
 
             System.out.println("Checked out commit " + commitHash);
 
@@ -68,6 +67,10 @@ public class CheckoutCommand implements Command {
         String treeData = Files.readString(treeObj.toPath());
         Map<String, String> files = parseTree(treeData);
 
+        // CLEAN WORKING DIRECTORY (except .fit directory)
+        cleanWorkingDirectory();
+
+        // RESTORE FILES
         for (Map.Entry<String, String> entry : files.entrySet()) {
             String filename = entry.getKey();
             String blobHash = entry.getValue();
@@ -82,6 +85,22 @@ public class CheckoutCommand implements Command {
 
             System.out.println("Restored: " + filename);
         }
+    }
+
+    private void cleanWorkingDirectory() {
+        File root = new File(".");
+        for (File file : root.listFiles()) {
+            if (file.getName().equals(".fit")) continue;
+            deleteRecursive(file);
+        }
+    }
+
+    private void deleteRecursive(File file) {
+        if (file.isDirectory()) {
+            for (File f : file.listFiles())
+                deleteRecursive(f);
+        }
+        file.delete();
     }
 
     private String extractTree(String commitData) {
@@ -99,11 +118,8 @@ public class CheckoutCommand implements Command {
         for (String line : data.split("\n")) {
             if (line.isBlank()) continue;
             String[] p = line.split(" ");
-            if (p.length == 2) {
-                map.put(p[0], p[1]);
-            }
+            if (p.length == 2) map.put(p[0], p[1]);
         }
-
         return map;
     }
 }

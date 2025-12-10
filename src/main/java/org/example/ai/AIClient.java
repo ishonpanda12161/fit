@@ -7,8 +7,9 @@ import java.net.http.HttpResponse;
 
 public class AIClient {
 
+
     private static final String API_URL = "https://api.groq.com/openai/v1/chat/completions";
-    public static String API_KEY = "nahi bataunga";
+    public static String API_KEY = System.getenv("GROQ_API");
 
     private static final HttpClient client = HttpClient.newHttpClient();
 
